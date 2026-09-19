@@ -58,8 +58,9 @@
     // TODO(student): change these three vertices
     const positions = new Float32Array([
        0.0,  -0.5,   // top
-       0.5, 0.5,   // bottom-left
-       -1.5, 1.5,   // bottom-right
+       0.5, 0.5,   // top-right
+       //Upside down top-left vertices -0.5, 0.5
+       -1.5, 1.5,   // top-left
        //By clipping the triangle it stretches the triangle from an equilateral
        //triangle to a scalene triangle. Additionally, since the vertex was outside
        //of the plotting graph since it only goes to 1.
