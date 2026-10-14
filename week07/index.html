@@ -94,7 +94,6 @@
     gl.vertexAttribPointer(aColor, 3, gl.FLOAT, false, stride, 2 * F);
     const uMVP = gl.getUniformLocation(program, "u_mvp");
 
-    // TODO(student): add camera variables and a zoom factor.
     const cx = -1.28, cy = -0.28, zoom = 0.30;
 
     function render() {
@@ -117,7 +116,6 @@
       gl.uniformMatrix4fv(uMVP, false, mvp);
       gl.drawArrays(gl.TRIANGLES, 0, 6);
       
-      // TODO(student): add a second object
       const M2 = translation(-7.0, 3.0); //placing second object in a different position than the original object
 
       const mvp2 = multiply(multiply(P, V), M2);
