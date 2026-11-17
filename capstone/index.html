@@ -133,7 +133,7 @@
     const uShininess = gl.getUniformLocation(program, "u_shininess");
 
     gl.enable(gl.DEPTH_TEST);
-    const viewDist = 3;
+    const viewDist = 4;
 
     function frame(t) {
       const dpr = window.devicePixelRatio || 1;
@@ -142,24 +142,41 @@
       if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
       gl.viewport(0, 0, canvas.width, canvas.height);
 
-      const a = t * 0.0005;
+      gl.clearColor(0.13, 0.12, 0.24, 1.0);
+      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-      //Sun
-      const model = multiply(rotationY(a), rotationX(a * 0.5));
+
+      gl.useProgram(program);
+      gl.uniform3f(uLightPos, 0.25, 1.0, 1.0);
+      gl.uniform3f(uViewPos, 0, 0, viewDist);
+      gl.uniform1f(uShininess, 50.0);
+
       const aspect = canvas.width / canvas.height;
       const P = perspective(120 * Math.PI / 180, aspect, 0.1, 50);
       const Vm = translation(0, 0, -viewDist);
-      const mvp = multiply(multiply(P, Vm), model);
-      gl.useProgram(program);
-      gl.uniformMatrix4fv(uMVP, false, mvp);
-      gl.uniformMatrix4fv(uModel, false, model);
-      gl.uniform3f(uLightPos, 0.0, 0.0, 1.0);
-      gl.uniform3f(uViewPos, 0, 0, viewDist);
-      gl.uniform1f(uShininess, 0.0);
+      const a = t * 0.0005;
 
-      gl.clearColor(0.13, 0.12, 0.24, 1.0);
-      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+      //Sun (center that the planets are orbiting around)
+      const sunModel = multiply(rotationY(a), rotationX(a * 0.5));
+      let mvp = multiply(multiply(P, Vm), sunModel);
+
+      gl.uniformMatrix4fv(uMVP, false, mvp);
+      gl.uniformMatrix4fv(uModel, false, sunModel);
       gl.drawArrays(gl.TRIANGLES, 0, 36);
+
+      //Planets
+      const orbitRadius = 2.2;
+      for (let i = 0; i < 5; i++){
+        const angle = (i/5) * Math.PI * 2 + (t * 0.0003);
+        const x = Math.cos(angle) * orbitRadius;
+        const z = Math.sin(angle) * orbitRadius;
+
+        const planetsModel = multiply(translation(x, 0, z), multiply(rotationY(a * 2.0), rotationX(a)));
+        mvp = multiply(multiply(P, Vm), planetsModel);
+        gl.uniformMatrix4fv(uMVP, false, mvp);
+        gl.uniformMatrix4fv(uModel, false, planetsModel);
+        gl.drawArrays(gl.TRIANGLES, 0, 36);
+      }
 
       requestAnimationFrame(frame);
     }
