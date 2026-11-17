@@ -133,7 +133,7 @@
     const uShininess = gl.getUniformLocation(program, "u_shininess");
 
     gl.enable(gl.DEPTH_TEST);
-    const viewDist = 4;
+    const viewDist = 6;
 
     function frame(t) {
       const dpr = window.devicePixelRatio || 1;
@@ -149,7 +149,6 @@
       gl.useProgram(program);
       gl.uniform3f(uLightPos, 0.25, 1.0, 1.0);
       gl.uniform3f(uViewPos, 0, 0, viewDist);
-      gl.uniform1f(uShininess, 50.0);
 
       const aspect = canvas.width / canvas.height;
       const P = perspective(120 * Math.PI / 180, aspect, 0.1, 50);
@@ -162,12 +161,13 @@
 
       gl.uniformMatrix4fv(uMVP, false, mvp);
       gl.uniformMatrix4fv(uModel, false, sunModel);
+      gl.uniform1f(uShininess, 0.0);
       gl.drawArrays(gl.TRIANGLES, 0, 36);
 
       //Planets
-      const orbitRadius = 2.2;
+      const orbitRadius = 4;
       for (let i = 0; i < 5; i++){
-        const angle = (i/5) * Math.PI * 2 + (t * 0.0003);
+        const angle = (i/5) * Math.PI * 2 + (t * 0.0002);
         const x = Math.cos(angle) * orbitRadius;
         const z = Math.sin(angle) * orbitRadius;
 
@@ -175,6 +175,7 @@
         mvp = multiply(multiply(P, Vm), planetsModel);
         gl.uniformMatrix4fv(uMVP, false, mvp);
         gl.uniformMatrix4fv(uModel, false, planetsModel);
+        gl.uniform1f(uShininess, 1.0);
         gl.drawArrays(gl.TRIANGLES, 0, 36);
       }
 
