@@ -93,6 +93,7 @@
         [-0.5,-0.5, 0.5],[0.5,-0.5, 0.5],[0.5,0.5, 0.5],[-0.5,0.5, 0.5],
       ];
       const col = [0.80,0.82,0.88];
+
       const faces = [
         { idx:[4,5,6,7], n:[0,0,1] },  { idx:[1,0,3,2], n:[0,0,-1] },
         { idx:[5,1,2,6], n:[1,0,0] },  { idx:[0,4,7,3], n:[-1,0,0] },
@@ -142,21 +143,21 @@
       gl.viewport(0, 0, canvas.width, canvas.height);
 
       const a = t * 0.0005;
+
+      //Sun
       const model = multiply(rotationY(a), rotationX(a * 0.5));
       const aspect = canvas.width / canvas.height;
       const P = perspective(120 * Math.PI / 180, aspect, 0.1, 50);
       const Vm = translation(0, 0, -viewDist);
       const mvp = multiply(multiply(P, Vm), model);
-
       gl.useProgram(program);
       gl.uniformMatrix4fv(uMVP, false, mvp);
       gl.uniformMatrix4fv(uModel, false, model);
-
-      gl.uniform3f(uLightPos, 0.25, 1.0, 1.0);
+      gl.uniform3f(uLightPos, 0.0, 0.0, 1.0);
       gl.uniform3f(uViewPos, 0, 0, viewDist);
-      gl.uniform1f(uShininess, 50.0);
+      gl.uniform1f(uShininess, 0.0);
 
-      gl.clearColor(0.10, 0.12, 0.16, 1.0);
+      gl.clearColor(0.13, 0.12, 0.24, 1.0);
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
       gl.drawArrays(gl.TRIANGLES, 0, 36);
 
