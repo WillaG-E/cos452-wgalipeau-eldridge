@@ -6,17 +6,17 @@
 > This project creates a spinning centerpiece with multiple cubes orbiting it using the concepts and base codes from the labs. With a glowing point light circling all 3D geometry.
 
 ## Course Techniques Used:
-> 3D Geometry & Depth
+> 3D Geometry & Depth: A cube in the center representing the Sun and five additional cubes around the center cube representing five different planets.
 
-> Transformations
+> Transformations:
 
-> Camera
+> Camera:
 
-> Lighting
+> Lighting: Making the center cube act as the light since it is supposed to represent the Sun, so all of the outer cubes (planets) are receiving the light from the center cube (Sun).
 
-> Texturing
+> Texturing: If I have time I will add texture to all of the 3D geometry to give the appearance of the Sun and various planets.
 
-> Interaction & Animation
+> Interaction & Animation: The five cubes (planets) around the Sun are orbiting and turning around the center and from their position.
 
 ## Controls:
 
