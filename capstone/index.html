@@ -98,7 +98,7 @@
         [-0.5,-0.5,-0.5],[0.5,-0.5,-0.5],[0.5,0.5,-0.5],[-0.5,0.5,-0.5],
         [-0.5,-0.5, 0.5],[0.5,-0.5, 0.5],[0.5,0.5, 0.5],[-0.5,0.5, 0.5],
       ];
-      const col = [0.80,0.82,0.88];
+      const col = [1,1,1];
 
       const faces = [
         { idx:[4,5,6,7], n:[0,0,1] },  { idx:[1,0,3,2], n:[0,0,-1] },
@@ -150,21 +150,33 @@
     gl.enable(gl.DEPTH_TEST);
     const viewDist = 6;
 
-    const texture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([255,255,255,255]));
-    const image = new Image();
-    image.onload = () => {
+    //Added a function that will allow each cube to have a different texture 
+    function loadTextures(url){
+      const texture = gl.createTexture();
       gl.bindTexture(gl.TEXTURE_2D, texture);
-      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    };
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([255,255,255,255]));
+      const image = new Image();
+      image.onload = () => {
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      };
+      image.src = url;
+      return texture;
+    }
 
-    image.src = "sun_center.jpg";
+    const textures = [
+      loadTextures("sun_center.jpg"),
+      loadTextures("earth.jpg"),
+      loadTextures("mars.jpg"),
+      loadTextures("jupiter.jpg"),
+      loadTextures("neptune.jpg"),
+      loadTextures("uranus.jpg"),
+    ];
 
     function frame(t) {
       const dpr = window.devicePixelRatio || 1;
@@ -179,13 +191,11 @@
 
       gl.useProgram(program);
       gl.activeTexture(gl.TEXTURE0);
-      gl.bindTexture(gl.TEXTURE_2D, texture);
-      gl.uniform1i(uTexture, 0);
       gl.uniform3f(uLightPos, 0.25, 1.0, 1.0);
       gl.uniform3f(uViewPos, 0, 0, viewDist);
 
       const aspect = canvas.width / canvas.height;
-      const P = perspective(120 * Math.PI / 180, aspect, 0.1, 50);
+      const P = perspective(100 * Math.PI / 180, aspect, 0.1, 50);
       const Vm = translation(0, 0, -viewDist);
       const a = t * 0.0005;
 
@@ -196,6 +206,7 @@
       gl.uniformMatrix4fv(uMVP, false, mvp);
       gl.uniformMatrix4fv(uModel, false, sunModel);
       gl.uniform1f(uShininess, 400.0);
+      gl.bindTexture(gl.TEXTURE_2D, textures[0]);
       gl.drawArrays(gl.TRIANGLES, 0, 36);
 
       //Planets Orbiting on with the same path/spinning
@@ -209,7 +220,8 @@
         mvp = multiply(multiply(P, Vm), planetsModel);
         gl.uniformMatrix4fv(uMVP, false, mvp);
         gl.uniformMatrix4fv(uModel, false, planetsModel);
-        gl.uniform1f(uShininess, 16.0);
+        gl.uniform1f(uShininess, 4.0);
+        gl.bindTexture(gl.TEXTURE_2D, textures[i + 1]);
         gl.drawArrays(gl.TRIANGLES, 0, 36);
       }
 
